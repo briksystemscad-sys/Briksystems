@@ -148,7 +148,7 @@ The n8n workflow includes a dedicated **Check Idempotency** code node that uses 
 
 1. In n8n, open the workflow and click **Listen for test event** on the Webhook node.
 2. Open [`index.html`](../index.html) in your browser.
-3. Log in with `dexter125555@gmail.com`.
+3. Log in with `iepethankuds@gmail.com`.
 4. Go to **Leads** and click **+ Add Lead**.
 5. Fill in:
    - **Name**: `John Test`

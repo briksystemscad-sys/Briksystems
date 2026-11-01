@@ -5,9 +5,11 @@
   "type": "module",
   "description": "Multi-tenant SaaS platform for local service businesses with public landing pages and private management dashboard",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "node scripts/generate-pages.js && vite",
+    "build": "node scripts/build.js",
+    "preview": "vite preview",
+    "server": "node server/server.js",
+    "check:pages": "node scripts/check-pages.js"
   },
   "dependencies": {
     "@googleapis/calendar": "^20.0.1",

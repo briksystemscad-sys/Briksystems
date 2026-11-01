@@ -6,8 +6,8 @@ import fs from 'fs';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://qrrdmhwpiiwtixofyvqf.supabase.co';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFycmRtaHdwaWl3dGl4b2Z5dnFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMDA2MjQsImV4cCI6MjEwMzc3NjYyNH0.K2f7ZRKiCaA9_PJPZZ-sQ2GY0tsxWQsd7hNwHiriEnc';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'dexter125555@gmail.com';
-const SMS_REMINDER_URL = 'https://www.smsreminder.co/book/BiMACnASoaRIx29Y/usseerrish';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iepethankuds@gmail.com';
+const SMS_REMINDER_URL = 'https://www.smsreminder.co/book/007UCqZnjYgVb4dI/ipethan-kuds';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 

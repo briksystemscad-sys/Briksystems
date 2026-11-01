@@ -18,10 +18,10 @@ app.use(cors());
 app.use(express.json());
 
 // Configuration
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'dexter125555@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iepethankuds@gmail.com';
 const TIMEZONE = process.env.TIMEZONE || 'America/Toronto';
-const PROVIDER_ID = 'usr_BiMACnASoaRIx29Y';
-const APPOINTMENT_TYPE_ID = '8ae37932-14ba-4b69-b013-abb7654a984e';
+const PROVIDER_ID = 'usr_007UCqZnjYgVb4dI';
+const APPOINTMENT_TYPE_ID = '5aa73161-d540-4906-9b61-11172bd56110';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://qrrdmhwpiiwtixofyvqf.supabase.co';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFycmRtaHdwaWl3dGl4b2Z5dnFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMDA2MjQsImV4cCI6MjEwMzc3NjYyNH0.K2f7ZRKiCaA9_PJPZZ-sQ2GY0tsxWQsd7hNwHiriEnc';
@@ -45,8 +45,16 @@ async function createSmsReminderDirectBooking(data) {
     }
 
     const [h, m] = data.booking_time.split(':').map(Number);
-    // Provider timezone is America/New_York (UTC-4)
-    const startTimeUtc = new Date(`${data.booking_date}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00-04:00`).toISOString();
+    // Determine accurate UTC offset for America/New_York on this booking date
+    const testDate = new Date(`${data.booking_date}T12:00:00Z`);
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      timeZoneName: 'shortOffset'
+    }).formatToParts(testDate);
+    const tzPart = parts.find(p => p.type === 'timeZoneName');
+    const offsetHours = tzPart ? parseInt(tzPart.value.replace('GMT', ''), 10) : -4;
+    const offsetStr = `${offsetHours < 0 ? '-' : '+'}${String(Math.abs(offsetHours)).padStart(2, '0')}:00`;
+    const startTimeUtc = new Date(`${data.booking_date}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00${offsetStr}`).toISOString();
 
     const response = await fetch('https://go-interactive.herokuapp.com/v1/bookings', {
       method: 'POST',
@@ -119,7 +127,7 @@ async function sendAdminNotificationEmail(data) {
  */
 async function getSmsReminderLiveSlots(dateStr) {
   try {
-    const url = `https://go-interactive.herokuapp.com/v1/availability-slots/compute-slots-for-customer-day?providerId=usr_BiMACnASoaRIx29Y&appointmentTypeId=8ae37932-14ba-4b69-b013-abb7654a984e&customerDateISO=${encodeURIComponent(dateStr)}&customerTz=America%2FNew_York&rescheduleCode=`;
+    const url = `https://go-interactive.herokuapp.com/v1/availability-slots/compute-slots-for-customer-day?providerId=usr_007UCqZnjYgVb4dI&appointmentTypeId=5aa73161-d540-4906-9b61-11172bd56110&customerDateISO=${encodeURIComponent(dateStr)}&customerTz=America%2FNew_York&rescheduleCode=`;
     const response = await fetch(url);
     if (!response.ok) return null;
     const data = await response.json();
@@ -128,10 +136,10 @@ async function getSmsReminderLiveSlots(dateStr) {
       const busySlots = [];
 
       for (const s of data.slots) {
-        const date = new Date(s.start_time_customer_tz || s.start_time_provider_tz);
-        const hours = String(date.getHours()).padStart(2, '0');
-        const mins = String(date.getMinutes()).padStart(2, '0');
-        const timeStr = `${hours}:${mins}`;
+        const raw = s.start_time_provider_tz || s.start_time_customer_tz || '';
+        const match = raw.match(/T(\d{2}:\d{2})/);
+        const timeStr = match ? match[1] : '';
+        if (!timeStr) continue;
 
         if (s.is_free !== false) {
           availableSlots.push(timeStr);
@@ -153,6 +161,11 @@ async function getSmsReminderLiveSlots(dateStr) {
 // GET /api/availability & /api/calendar/availability
 // ---------------------------------------------------------------------------
 async function handleAvailability(req, res) {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  });
   try {
     const { date } = req.query;
     if (!date || typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date.trim())) {
@@ -348,12 +361,14 @@ app.get('/api/bookings', async (req, res) => {
 });
 
 // Serve Static Frontend
-app.use(express.static(path.join(__dirname, 'dist')));
-app.use(express.static(__dirname));
+const projectRoot = path.join(__dirname, '..');
+app.use(express.static(path.join(projectRoot, 'dist')));
+app.use(express.static(path.join(projectRoot, 'public')));
+app.use(express.static(projectRoot));
 
 // Fallback to index.html
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(projectRoot, 'index.html'));
 });
 
 app.listen(PORT, () => {

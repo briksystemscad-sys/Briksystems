@@ -35,7 +35,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
  */
 async function getSmsReminderLiveSlots(dateStr: string): Promise<{ availableSlots: string[]; busySlots: string[] } | null> {
   try {
-    const url = `https://go-interactive.herokuapp.com/v1/availability-slots/compute-slots-for-customer-day?providerId=usr_BiMACnASoaRIx29Y&appointmentTypeId=8ae37932-14ba-4b69-b013-abb7654a984e&customerDateISO=${encodeURIComponent(dateStr)}&customerTz=America%2FNew_York&rescheduleCode=`;
+    const url = `https://go-interactive.herokuapp.com/v1/availability-slots/compute-slots-for-customer-day?providerId=usr_007UCqZnjYgVb4dI&appointmentTypeId=5aa73161-d540-4906-9b61-11172bd56110&customerDateISO=${encodeURIComponent(dateStr)}&customerTz=America%2FNew_York&rescheduleCode=`;
     const response = await fetch(url);
     if (!response.ok) return null;
     const data = await response.json() as {
@@ -50,10 +50,10 @@ async function getSmsReminderLiveSlots(dateStr: string): Promise<{ availableSlot
       const busySlots: string[] = [];
 
       for (const s of data.slots) {
-        const date = new Date(s.start_time_customer_tz || s.start_time_provider_tz || '');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const mins = String(date.getMinutes()).padStart(2, '0');
-        const timeStr = `${hours}:${mins}`;
+        const raw = s.start_time_provider_tz || s.start_time_customer_tz || '';
+        const match = raw.match(/T(\d{2}:\d{2})/);
+        const timeStr = match ? match[1] : '';
+        if (!timeStr) continue;
 
         if (s.is_free !== false) {
           availableSlots.push(timeStr);
@@ -75,6 +75,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'

@@ -19,10 +19,10 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || proce
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'dexter125555@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iepethankuds@gmail.com';
 const TIMEZONE = process.env.TIMEZONE || 'America/Toronto';
-const PROVIDER_ID = 'usr_BiMACnASoaRIx29Y';
-const APPOINTMENT_TYPE_ID = '8ae37932-14ba-4b69-b013-abb7654a984e';
+const PROVIDER_ID = 'usr_007UCqZnjYgVb4dI';
+const APPOINTMENT_TYPE_ID = '5aa73161-d540-4906-9b61-11172bd56110';
 
 /**
  * Direct Instant Booking with SMS Reminder and Google Calendar
@@ -41,8 +41,16 @@ async function createSmsReminderDirectBooking(data: {
     }
 
     const [h, m] = data.booking_time.split(':').map(Number);
-    // Provider timezone is America/New_York (UTC-4)
-    const startTimeUtc = new Date(`${data.booking_date}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00-04:00`).toISOString();
+    // Determine accurate UTC offset for America/New_York on this booking date
+    const testDate = new Date(`${data.booking_date}T12:00:00Z`);
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      timeZoneName: 'shortOffset'
+    }).formatToParts(testDate);
+    const tzPart = parts.find(p => p.type === 'timeZoneName');
+    const offsetHours = tzPart ? parseInt(tzPart.value.replace('GMT', ''), 10) : -4;
+    const offsetStr = `${offsetHours < 0 ? '-' : '+'}${String(Math.abs(offsetHours)).padStart(2, '0')}:00`;
+    const startTimeUtc = new Date(`${data.booking_date}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00${offsetStr}`).toISOString();
 
     const response = await fetch('https://go-interactive.herokuapp.com/v1/bookings', {
       method: 'POST',

@@ -1,61 +1,53 @@
-# Brik Systems — Build a Better Business System
+# Brik Systems
 
-Brik Systems builds websites and automated systems that help local businesses capture leads, manage customers, collect reviews, and follow up without the manual work.
+Marketing website, booking integration, and client portal.
 
-Based on the [Brik Systems Platform](https://brik-systems-platfor-jrsk.bolt.host).
+## Open the website
 
----
+- Open `index.html` for the local source website.
+- Navigation opens actual files such as `pages/contact/index.html` and `pages/services/web-design/index.html`.
+- Open `dist/index.html` to inspect the production build locally.
+- Hosted navigation uses clean URLs such as `/contact/` and `/services/web-design/`.
+- Old `#/contact` links redirect to the corresponding page.
 
-## 🌟 Pages & Architecture
+## Commands
 
-### 1. Marketing Website
-- **Home (`/#/`)**:
-  - Hero with live animated app mockup (+3 New Leads, +5 Active Jobs, +2 Completed, +4 Review Requests) and 5-step visual workflow.
-  - *"The real problem"* section (Missed Leads, Manual Follow-Up, Forgotten Reviews).
-  - *"What we build"* grid (Websites, Lead Systems, Review Systems, Follow-Up Automation, AI Business Automation).
-  - *"How Brik Systems works"* 6-step lifecycle diagram.
-  - *"The platform"* preview with embedded jobs table.
-  - Call to Action banner (*"Your Website Should Do More Than Look Good"*).
-- **Services (`/#/services`)**:
-  - Detailed feature breakdown of Websites, Lead Systems, Review Systems, Follow-Up Automation, and AI Business Automation.
-  - *"One Workflow, Start to Finish"* process timeline.
-- **Our Work (`/#/work`)**:
-  - 6 interactive portfolio case studies (*Northside Plumbing*, *Peak HVAC*, *Evergreen Landscaping*, *Bright & Clean Co.*, *Summit Contracting*, *Apex Auto Detailing*) with modal previews.
-- **About (`/#/about`)**:
-  - Mission, core philosophy, and why local service businesses need unified systems over disconnected point apps.
-- **Contact / Book a Call (`/#/contact`)**:
-  - Direct inquiry form that feeds into the lead pipeline in real time with instant toast notifications.
-- **Client Login (`/#/login`)**:
-  - Branded split-screen sign-in gateway into the client portal.
+`npm install` installs dependencies.
 
-### 2. Client Management Portal (`/#/portal`)
-- 📊 **Overview (`/#/portal`)**: Live KPI stat cards (New Leads, Active Jobs, Completed Jobs, Review Requests), workflow timeline, recent jobs table, and verified customer reviews.
-- 👥 **Leads (`/#/portal/leads`)**: Inbound lead pipeline with 1-click conversion to active work orders.
-- 🔨 **Jobs (`/#/portal/jobs`)**: Job tracker with technician dispatch, pricing, and 1-click completion that triggers automated 5-star review request messages.
-- 👤 **Customers (`/#/portal/customers`)**: Client directory with job history counters and contact info.
-- ⭐ **Reviews (`/#/portal/reviews`)**: Real feedback stream and star ratings.
-- 🔁 **Automations (`/#/portal/automations`)**: Event-driven SMS/Email triggers and dispatched notification history log.
-- ⚙️ **Settings (`/#/portal/settings`)**: Company profile and contact settings.
+`npm run dev` regenerates pages and starts the Vite development server.
 
----
+`npm run build` regenerates pages, checks TypeScript, and creates a clean production build in `dist/`. Files are written sequentially for Windows compatibility.
 
-## 🚀 Quick Start (Zero Setup)
+`npm run check:pages` verifies local and production navigation, nested asset paths, hosted URLs, and legacy hash-link redirects.
 
-1. Open **[`index.html`](file:///C:/Users/losik/.gemini/antigravity/scratch/briksystem12/index.html)** in any browser.
-2. Navigate seamlessly between **Home**, **Services**, **Our Work**, **About**, **Contact**, **Login**, and the **Client Portal**.
-3. Submit a test inquiry on the **Contact** page and watch it appear in the **Leads** section in the Portal.
-4. Mark a job as **Completed** in the Portal to see the automated review request workflow trigger in real time!
+`npm run preview` previews the production build.
 
----
+`npm run server` starts the separate Express booking backend. Configure its environment variables before use; see `.env.example`.
 
-## 📦 Pushing to GitHub (`ipethankuds-crypto/BrikSystem12`)
+## Project layout
 
-```bash
-cd C:\Users\losik\.gemini\antigravity\scratch\briksystem12
-git init
-git add .
-git commit -m "Build Brik Systems platform matching bolt.host design and portal"
-git branch -M main
-git remote add origin https://github.com/ipethankuds-crypto/BrikSystem12.git
-git push -u origin main --force
-```
+| Location | Purpose |
+| --- | --- |
+| `index.html` | Main application/template: page views, shared styling, animation, and components |
+| `pages/` | Generated public, service, portal, and administration HTML documents |
+| `public/` | Canonical static assets, videos, logos, icons, sitemap, and robots.txt |
+| `scripts/pages.js` | Shared page manifest: paths, routes, titles, and descriptions |
+| `scripts/generate-pages.js` | Generates page documents from the main template |
+| `scripts/build.js` | Validates and builds the production website |
+| `scripts/check-pages.js` | Verifies document navigation and asset resolution |
+| `api/` | Vercel booking and availability handlers |
+| `server/` | Express backend and SMS Reminder integration |
+| `database/` | Supabase SQL definitions |
+| `n8n/` | Automation workflow definitions and setup documentation |
+| `src/` | TypeScript data helpers, shared types, and seed configuration |
+| `dist/` | Generated production output; deploy this folder |
+
+## Editing
+
+Edit `index.html` for shared design or component changes, then run `npm run build`. Generated files under `pages/` are overwritten during generation.
+
+To add or rename a page, edit `scripts/pages.js`. Its entries drive both generation and Vite's build inputs. Use `siteHref('#/contact')` to obtain the correct local or hosted URL, and `navigateTo('#/contact')` for programmatic navigation. The route strings are internal page identifiers; visitor-facing links use actual documents, without hash routing.
+
+The homepage logo strip is configured in `HomeBrandMarquee`. Its 20 original wordmarks live in `public/assets/brand-strip/` and are labeled as portfolio names and brand concepts.
+
+Historical patch scripts, screenshot experiments, and exact duplicate root assets were removed from the active project and retained in an external recovery backup. Runtime source, dependencies, database files, and active public assets remain in the folders above.

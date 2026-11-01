@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Allow Google Image Bot to crawl site icons and favicons
+User-agent: Googlebot-Image
+Allow: /
+
+Sitemap: https://briksystems.com/sitemap.xml
